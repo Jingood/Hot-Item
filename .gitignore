@@ -296,4 +296,7 @@ pip-selfcheck.json
 .history
 .ionide
 
+### Dev Container ###
+.devcontainer
+
 # End of https://www.toptal.com/developers/gitignore/api/python,venv,django,dotenv,visualstudiocode
