@@ -1,0 +1,14 @@
+# Web Framework
+Django>=5.0,<5.1
+
+# Database (PostgreSQL)
+psycopg[binary]>=3.1.18
+
+# Cache & Queue (Redis)
+redis>=5.0.3
+
+# Asynchronous Task (Celery)
+celery>=5.3.6
+
+django-environ>=0.11.2
+requests>=2.31.0
