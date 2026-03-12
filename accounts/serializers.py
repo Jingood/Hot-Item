@@ -17,3 +17,7 @@ class SignupSerializer(serializers.ModelSerializer):
             phone_number=validated_data['phone_number']
         )
         return user
+    
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(help_text="발급 받은 Refresh Token을 입력하세요.")
