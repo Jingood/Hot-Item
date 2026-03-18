@@ -24,7 +24,7 @@ class OrderCreateView(APIView):
 
         item = serializers.validated_data['item']
 
-        # ? v1, 일반적인 RDBMS 조회 -> 예상 효과: 수천 명이 동시에 실행하면 모두가 stock > 0 이라고 판단 (초과 판매 발생)
+        # ? v1 (실패 유도), 일반적인 RDBMS 조회 -> 예상 효과: 수천 명이 동시에 실행하면 모두가 stock > 0 이라고 판단 (초과 판매 발생)
         if item.stock > 0:
             item.stock -= 1
             item.save()
