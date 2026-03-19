@@ -10,6 +10,9 @@ redis>=5.0.3
 # Asynchronous Task (Celery)
 celery>=5.3.6
 
+# Load Testing
+locust>=2.24.0
+
 django-environ>=0.11.2
 requests>=2.31.0
 djangorestframework>=3.15.0
