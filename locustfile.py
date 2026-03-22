@@ -11,7 +11,7 @@ class HotItemShopper(HttpUser):
         """
         user_id = random.randint(1, 500)
         login_data = {
-            "username": f"dumy{user_id}",
+            "username": f"dummy{user_id}",
             "password": "testpass123!"
         }
 
@@ -34,7 +34,7 @@ class HotItemShopper(HttpUser):
                 "item_id": 1
             }
 
-            with self.client.post("/api/shop/orders", json=payload, headers=headers, catch_response=True) as response:
+            with self.client.post("/api/shop/orders/", json=payload, headers=headers, catch_response=True) as response:
                 if response.status_code == 201:
                     response.success()
                 elif response.status_code == 400:
