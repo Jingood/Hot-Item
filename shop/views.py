@@ -12,7 +12,8 @@ class ItemListView(generics.ListAPIView):
     serializer_class = ItemSerializer
     permission_classes = [AllowAny]
 
-
+"""
+v1의 기록
 class OrderCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -44,4 +45,5 @@ class OrderCreateView(APIView):
                 {"error": "재고가 소진되었습니다."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+"""
 
