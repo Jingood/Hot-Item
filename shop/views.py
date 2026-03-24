@@ -47,3 +47,30 @@ class OrderCreateView(APIView):
             )
 """
 
+# ? v2, 데이버베이스 락: select_for_update 적용
+class OrderCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request,*args, **kwargs):
+        serializers = OrderSerializer(data=request.data)
+        serializers.is_valid(raise_exception=True)
+
+        item = Item.objects.select_for_update().get(id=serializers.validated_data['item'].id)
+
+        if item.stock > 0:
+            item.stock -= 1
+            item.save()
+
+            order = Order.objects.create(
+                user=request.user,
+                item=item,
+                status=Order.Status.COMPLETED
+            )
+
+            return Response(
+                {"message": "주문 완료", "order_id": order.id, "remain_stock": item.stock},
+                status=status.HTTP_201_CREATED
+            )
+        else:
+            return Response({"error": "재고 부족"}, status=status.HTTP_400_BAD_REQUEST)

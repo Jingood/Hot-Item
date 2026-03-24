@@ -1,14 +1,12 @@
 from locust import HttpUser, task, between
 import random
 
-class HotItemShopper(HttpUser):
-    wait_time = between(0.5, 1.0)
-    token = ""
-    
-    def on_start(self):
-        """
+"""
+v1 테스트 시 로그인 병목이 일어난 테스트 로직
+def on_start(self):
+        
         가상 유저 생성 시 1~500번 중 랜덤으로 한 명의 유저를 선택하여 로그인
-        """
+        
         user_id = random.randint(1, 500)
         login_data = {
             "username": f"dummy{user_id}",
@@ -20,7 +18,11 @@ class HotItemShopper(HttpUser):
             self.token = response.json().get("access")
         else:
             print(f"로그인 실패: dummy{user_id}")
-
+"""
+class HotItemShopper(HttpUser):
+    wait_time = between(0.5, 1.0)
+    token = ""
+    
     @task
     def buy_limited_item(self):
         """
