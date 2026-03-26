@@ -19,9 +19,15 @@ def on_start(self):
         else:
             print(f"로그인 실패: dummy{user_id}")
 """
+
+with open("access_tokens.txt", "r") as f:
+    TOKENS = [line.strip() for line in f.readlines()]
+
 class HotItemShopper(HttpUser):
-    wait_time = between(0.5, 1.0)
-    token = ""
+    wait_time = between(0.1, 0.5)
+    
+    def on_start(self):
+        self.token = random.choice(TOKENS)
     
     @task
     def buy_limited_item(self):
