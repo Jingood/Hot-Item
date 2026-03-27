@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from django.db import transaction
+from django.core.cache import cache
+from django.db.models import F
 from .models import *
 from .serializers import *
 
@@ -47,6 +49,8 @@ class OrderCreateView(APIView):
             )
 """
 
+"""
+v2의 기록
 # ? v2, 데이버베이스 락: select_for_update 적용
 class OrderCreateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -74,3 +78,38 @@ class OrderCreateView(APIView):
             )
         else:
             return Response({"error": "재고 부족"}, status=status.HTTP_400_BAD_REQUEST)
+"""
+
+# ! 최종 v3
+class OrderCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializers = OrderSerializer(data=request.data)
+        serializers.is_valid(raise_exception=True)
+
+        item_id = serializers.validated_data['item'].id
+        redis_key = f'item_stock_{item_id}'
+
+        try:
+            remain_stock_in_redis = cache.decr(redis_key)
+        except ValueError:
+            item = Item.objects.get(id=item_id)
+            cache.set(redis_key, item.stock, timeout=None)
+            remain_stock_in_redis = cache.decr(redis_key)
+
+        if remain_stock_in_redis < 0:
+            return Response({"error": "재고 부족 (Redis)"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        order = Order.objects.create(
+            user=request.user,
+            item_id=item_id,
+            status=Order.Status.COMPLETED
+        )
+
+        Item.objects.filter(id=item_id).update(stock=F('stock') - 1)
+
+        return Response(
+            {"message": "성공", "order_id": order.id, "remain_stock": remain_stock_in_redis},
+            status=status.HTTP_201_CREATED
+        )
